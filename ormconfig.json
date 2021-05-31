@@ -2,8 +2,8 @@
   "type": "postgres",
   "host": "localhost",
   "port": 5432,
-  "username": "username",
-  "password": "password",
+  "username": "postgres",
+  "password": "",
   "database": "code_test",
   "entities": ["dist/**/*.entity{.ts,.js}"],
   "synchronize": true
