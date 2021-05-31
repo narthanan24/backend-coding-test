@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { BlogEntity } from "./blog.entity";
 import { Repository } from "typeorm";
 import { Cron, CronExpression } from "@nestjs/schedule";
+import * as admin from "firebase-admin";
 
 @Injectable()
 export class BlogService {
@@ -15,7 +16,12 @@ export class BlogService {
   }
 
   async createBlog(data): Promise<BlogEntity> {
-    return await this.blogRepository.save(data);
+    const blog = await this.blogRepository.save(data);
+    const db = admin.firestore();
+
+    const doc = await db.collection("code_test").doc()
+    doc.set(blog)
+    return blog;
   }
 
   async getOneBlog(id): Promise<BlogEntity> {
@@ -69,12 +75,12 @@ export class BlogService {
     for (let i = 0; i < 5; i++)
       randomText += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    const allBlogs = await this.getAllBlog()
-    allBlogs.map(async s=> {
-      const blog = await this.getOneBlog(s.id)
-      blog.title = s.title+randomText;
-      await this.blogRepository.save(blog)
-    })
+    const allBlogs = await this.getAllBlog();
+    allBlogs.map(async s => {
+      const blog = await this.getOneBlog(s.id);
+      blog.title = s.title + randomText;
+      await this.blogRepository.save(blog);
+    });
     // testing
     // console.log(await this.getAllBlog());
   }
